@@ -34882,7 +34882,9 @@ var BoardModel = (function () {
   }
   let helpSeen = false;
   try { helpSeen = localStorage.getItem(HELP_KEY) === '1'; } catch (e) { /* storage unavailable */ }
-  setHelp(!helpSeen);
+  // A first visit that opens a section in focus (a link with #board/section) skips the help: both panels sit on the left.
+  // It stays unseen, so it opens on the next visit without a section.
+  if (!helpSeen && focusHere()) help.hidden = true; else setHelp(!helpSeen);
   initPersistence(false);
 
   window.__boardMathReady = () => {
