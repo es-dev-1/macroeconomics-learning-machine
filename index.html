@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Macroeconomics Learning Board</title>
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #e8ecf0; color: #47505e; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  p { margin: 0; padding: 16px; text-align: center; }
+</style>
+</head>
+<body>
+<p id="msg">Loading the learning board…</p>
+<!--
+  GitHub Pages entry point. The board itself lives in deliverables/macro-learning-board.html, written as a page
+  fragment for the claude.ai artifact (which adds the document skeleton). This loader fetches it and writes it into
+  a full HTML document, so the published page is always the current board without a second copy of the file.
+  Saving layouts and notes, the tutor's pick, and the progress colors need the artifact runtime; here the board is
+  read-only and shows "Changes are not saved in this view".
+-->
+<script>
+  fetch('deliverables/macro-learning-board.html', { cache: 'no-cache' })
+    .then(r => { if (!r.ok) throw new Error(r.status + ' ' + r.statusText); return r.text(); })
+    .then(html => {
+      document.open();
+      document.write('<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">' + html);
+      document.close();
+    })
+    .catch(err => { document.getElementById('msg').textContent = 'The board could not be loaded (' + err.message + '). Open deliverables/macro-learning-board.html directly.'; });
+</script>
+</body>
+</html>

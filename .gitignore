@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+.tmp.drive*
+
+# The learner's own data stays on this computer. The tutor creates these files in the first session.
+data/learner-profile.md
+data/learner-progress.md
+data/practice-exams/
+
+# Course material from the faculty (slides, sheets, old exams) and what is derived from the exams is not ours to publish.
+data/sources/
+data/exam-analysis.md
