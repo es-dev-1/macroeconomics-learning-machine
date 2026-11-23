@@ -34647,8 +34647,15 @@ var BoardModel = (function () {
     error: 'Not saved yet. Retrying on your next change', readonly: 'View only: changes are not saved',
     quota: 'Storage full: delete some notes', local: 'Changes are not saved in this view'
   };
+  /* Outside the claude.ai artifact (GitHub Pages, a downloaded copy) the board saves in the browser instead */
+  const BROWSER_TEXT = { ready: 'Changes save in this browser', saved: 'Saved in this browser' };
+  let saveWhere = 'account';
   const saveEl = $('save-status');
-  function setSave(s) { saveEl.dataset.state = s; saveEl.textContent = SAVE_TEXT[s]; }
+  function setSave(s) {
+    saveEl.dataset.state = s;
+    saveEl.textContent = (saveWhere === 'browser' && BROWSER_TEXT[s]) || SAVE_TEXT[s];
+    saveEl.title = saveWhere === 'browser' ? 'Your notes, frames, arrows, and card positions are kept in this browser on this device only. Clearing the site data removes them.' : '';
+  }
   let docRef = null, saveTimer = null, saving = false, saveAgain = false, lastSavedJSON = null;
   /* layout: 3 marks saves split into the Maths, Micro, and Macro boards; 4 adds the micro lecture sections; 5 the Makro and Tutorium boards; 6 Makro VL 6 to 9; 11 the handwriting font */
   const serialize = () => ({ v: 1, layout: 11, nodes: state.nodes, frames: state.frames, notes: state.notes, arrows: state.arrows });
@@ -34820,10 +34827,47 @@ var BoardModel = (function () {
     setInitialView();
     toast('Your board is now three boards: Maths, Micro, and Macro. Switch with the buttons at the top.');
   }
+  const BROWSER_DOC_KEY = 'macro-learning-board-doc-v1';
+  function browserDoc() {
+    try { localStorage.setItem(BROWSER_DOC_KEY + '-probe', '1'); localStorage.removeItem(BROWSER_DOC_KEY + '-probe'); } catch (e) { return null; }
+    return {
+      get: async () => {
+        let data = null;
+        try { data = JSON.parse(localStorage.getItem(BROWSER_DOC_KEY) || 'null'); } catch (e) { data = null; }
+        const ok = !!data && typeof data === 'object';
+        return { exists: ok, data: () => (ok ? data : null) };
+      },
+      set: async data => {
+        try { localStorage.setItem(BROWSER_DOC_KEY, JSON.stringify(data)); }
+        catch (e) { const err = new Error('browser storage'); err.code = /quota/i.test((e && e.name) || '') ? 'quota_exceeded' : 'storage'; throw err; }
+      }
+    };
+  }
+  async function initBrowserSave() {
+    const ref = browserDoc();
+    if (!ref) { setSave('local'); return; }
+    saveWhere = 'browser';
+    docRef = ref;
+    openSaved(await ref.get());
+  }
+  /* A saved document (from the artifact's db or from the browser): apply it, convert old layouts, or start saving */
+  function openSaved(snapDoc) {
+    if (snapDoc.exists && applySaved(snapDoc.data())) {
+      lastSavedJSON = JSON.stringify(serialize());
+      setSave('saved');
+      const layout = snapDoc.data().layout || 1;
+      if (layout < 3) migrateBoards(layout);
+      if (layout < 11) refreshBoards(['math', 'micro', 'macro', 'tut'], layout >= 3 ? (layout < 9 ? 'Neu: der ganze Kurs (VL 1 bis 26), neue Tutoriumsaufgaben und Verbindungen zwischen allen Abschnitten.' : (layout < 10 ? 'Neu: Jede Karte zeigt ihre Grundlagen, das Wissensnetz (Taste W) den ganzen Kurs, und die Leitideen verbinden die Modelle.' : 'Neu: Alle Texte in Handschrift. Zahlen, Formeln und Graphen bleiben, wie sie waren.')) : null);
+    } else {
+      setSave('ready');
+      if (!pristine) scheduleSave();
+    }
+    if (focusHere()) showFocusFrame();
+  }
   async function initPersistence(retried) {
     setSave('loading');
     const c = window.claude;
-    if (!c || typeof c.use !== 'function') { setSave('local'); return; }
+    if (!c || typeof c.use !== 'function') { await initBrowserSave(); return; }
     try {
       const [db, user] = await Promise.all([c.use('db'), c.use('user')]);
       if (!db || !user) { setSave('local'); return; }
@@ -34834,17 +34878,7 @@ var BoardModel = (function () {
       docRef = ref;
       watchTutor(db, uid);
       watchProgress(db, uid);
-      if (snapDoc.exists && applySaved(snapDoc.data())) {
-        lastSavedJSON = JSON.stringify(serialize());
-        setSave('saved');
-        const layout = snapDoc.data().layout || 1;
-        if (layout < 3) migrateBoards(layout);
-        if (layout < 11) refreshBoards(['math', 'micro', 'macro', 'tut'], layout >= 3 ? (layout < 9 ? 'Neu: der ganze Kurs (VL 1 bis 26), neue Tutoriumsaufgaben und Verbindungen zwischen allen Abschnitten.' : (layout < 10 ? 'Neu: Jede Karte zeigt ihre Grundlagen, das Wissensnetz (Taste W) den ganzen Kurs, und die Leitideen verbinden die Modelle.' : 'Neu: Alle Texte in Handschrift. Zahlen, Formeln und Graphen bleiben, wie sie waren.')) : null);
-      } else {
-        setSave('ready');
-        if (!pristine) scheduleSave();
-      }
-      if (focusHere()) showFocusFrame();
+      openSaved(snapDoc);
     } catch (err) {
       if (err && err.code === 'unavailable' && !retried) { setTimeout(() => initPersistence(true), 1500); return; }
       docRef = null;

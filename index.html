@@ -15,8 +15,8 @@
   GitHub Pages entry point. The board itself lives in deliverables/macro-learning-board.html, written as a page
   fragment for the claude.ai artifact (which adds the document skeleton). This loader fetches it and writes it into
   a full HTML document, so the published page is always the current board without a second copy of the file.
-  Saving layouts and notes, the tutor's pick, and the progress colors need the artifact runtime; here the board is
-  read-only and shows "Changes are not saved in this view".
+  Without the artifact runtime the board saves notes and layout in this browser ("Saved in this browser"); the tutor's
+  pick and the progress colors need the claude.ai artifact.
 -->
 <script>
   fetch('deliverables/macro-learning-board.html', { cache: 'no-cache' })
