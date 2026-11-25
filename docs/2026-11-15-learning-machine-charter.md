@@ -13,7 +13,7 @@ Success for a student means the best possible grade in the time left until the e
 | Part | Role | Where the learner is |
 |------|------|----------------------|
 | The session (AI tutor in Claude Code) | Teaches by asking questions and setting tasks. Plans, tracks progress, and builds up to practice exams. | Most of the time |
-| The dashboard (the board, read as long chapters since version 24) | Intelligent knowledge base. Holds the knowledge, shows how it connects, and lets the learner focus on what matters now. | When reading up after a question or task |
+| The dashboard (the board, read chapter by chapter since version 24) | Intelligent knowledge base. Holds the knowledge, shows how it connects, and lets the learner focus on what matters now. | When reading up after a question or task |
 
 The material (lectures, practice sheets, old exams, prerequisite courses) feeds both: it becomes board content, and it shows the tutor how the professor thinks and asks.
 
@@ -66,7 +66,7 @@ A new topic means a new course folder. The method stays the same.
 | Links from macro to its foundations | Done, card to card (version 20): 382 connections say what is carried over and how, and link the card where it is used to the card that explains it. Shown at the foot of each card, in the focus panel, in the knowledge map, and in the tutor's `board-path.py` |
 | Related topics linked to each other | Done (version 20): 21 Leitideen trace the ideas that run through the course (steady state, Euler equation, neutrality, present value, market failure, and others), each with its stops and two connection questions. A frame on the Makro board and threads in the knowledge network |
 | Seeing the connections at a glance | Done (version 20): knowledge network (key W) with every section in columns; a click shows a section's whole chain of foundations and what it leads to |
-| Focus on what matters now | Done (version 16, reworked in version 24): the board is read as long chapters (Makro one per Teil); the tutor's pick opens the chapter at the section that matters now and rings the cards to read first, and the panel next to it shows that section's connections. The canvas of versions 1 to 23 was too slow and is archived. Version 20: the board shows the learner's progress (statuses and due reviews) written by the tutor, and the network's start view names the sections most of the course rests on |
+| Focus on what matters now | Done (version 16, reworked in version 24): the board is read chapter by chapter, one page per chapter of the course (version 25: Makro 1 to 22, with a chapter menu on every board button); the tutor's pick opens the chapter at the section that matters now and rings the cards to read first, and the panel next to it shows that section's connections. The canvas of versions 1 to 23 was too slow and is archived. Version 20: the board shows the learner's progress (statuses and due reviews) written by the tutor, and the network's start view names the sections most of the course rests on |
 | Old exams, practice exams, original Tutorium sheets | Not uploaded yet |
 | Exam date and study plan | Open, asked in the first study session |
 | Presentation rehearsal | Described in the skill, not tried |

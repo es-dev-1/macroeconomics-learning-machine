@@ -442,12 +442,30 @@ tr.hi td { font-weight: 700; background: var(--formula-bg); }
   .net-ideas { padding: 6px 12px; }
 }
 
-/* Reader: each board is read as a few long chapters (version 24). The canvas is archived. */
+/* Reader: each board is read chapter by chapter, one long page per chapter of the course (version 25). */
 :root { --tb-h: 56px; --col: 780px; }
 .app { min-height: 100vh; }
 .topbar { position: sticky; top: 0; z-index: 30; }
 .tb-group.spaces { gap: 2px; }
-.space-btn.on { background: var(--surface); color: var(--ink); border-color: var(--hair); box-shadow: 0 1px 2px rgba(10, 20, 35, 0.10); }
+.board-tab { position: relative; display: inline-flex; align-items: center; border: 1px solid transparent; border-radius: 8px; }
+.board-tab.on { background: var(--surface); border-color: var(--hair); box-shadow: 0 1px 2px rgba(10, 20, 35, 0.10); }
+.board-tab .space-btn { padding: 0 4px 0 12px; }
+.board-tab .space-btn.on { background: none; border-color: transparent; box-shadow: none; color: var(--ink); }
+.board-tab .chap-btn { width: 24px; padding: 0; justify-content: center; margin-right: 2px; }
+.board-tab .chap-btn svg { transition: transform 0.15s; }
+.board-tab .chap-btn[aria-expanded="true"] { background: var(--accent-wash); color: var(--ink); }
+.board-tab .chap-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+/* Chapter menu under a board's arrow */
+.menu.chap-menu { position: fixed; top: 60px; left: 12px; z-index: 40; min-width: 0; padding: 4px 6px 10px; gap: 1px; align-content: start; overscroll-behavior: contain; scrollbar-width: thin; }
+.chap-menu .menu-head { padding: 9px 10px 5px; }
+.chap-menu .menu-group { padding: 12px 10px 4px; font: 600 0.7rem/1.25 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.chap-menu .chap-item { align-items: baseline; gap: 10px; padding: 7px 10px; line-height: 1.3; }
+.chap-item .n { flex: none; min-width: 2.2em; font-weight: 600; }
+.chap-item .t { flex: 1; min-width: 0; }
+.chap-item.on { background: var(--accent-wash); box-shadow: inset 3px 0 0 var(--accent); font-weight: 600; }
+.chap-item.on .n { color: var(--accent); }
+.chap-item .now { flex: none; align-self: center; padding: 0 6px; border-radius: 999px; background: var(--warn-bg); color: var(--warn-ink); font: 600 0.66rem/1.5 var(--sans); }
 #btn-toc, #btn-ctx { display: none; }
 
 .shell { display: grid; grid-template-columns: 272px minmax(0, 1fr) 320px; align-items: start; max-width: 1720px; margin: 0 auto; }
@@ -461,7 +479,17 @@ tr.hi td { font-weight: 700; background: var(--formula-bg); }
 .toc-board { padding: 2px 8px 10px; font: 600 0.72rem/1.2 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 .toc ol { list-style: none; margin: 0; padding: 0; }
 .toc-chapters { display: grid; gap: 2px; }
-.toc-ch-btn { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 8px 10px; border-radius: 8px; color: var(--ink-2); font: 600 0.98rem/1.25 var(--sans); cursor: pointer; }
+.toc-group { padding: 14px 10px 4px; font: 600 0.68rem/1.25 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.toc-ch-btn { display: flex; align-items: baseline; gap: 8px; width: 100%; text-align: left; border: 0; background: none; padding: 7px 10px; border-radius: 8px; color: var(--ink-2); font: 600 0.96rem/1.25 var(--sans); cursor: pointer; }
+.toc-ch-btn .n { flex: none; min-width: 1.9em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.toc-ch-btn .n:empty { min-width: 0; }
+.toc-ch-btn .t { min-width: 0; }
+.toc-ch-btn .st { flex: none; align-self: center; width: 8px; height: 8px; margin-left: auto; border-radius: 50%; background: var(--st, transparent); }
+.toc-ch-btn.due .st { box-shadow: 0 0 0 2px var(--warn); }
+.toc-ch-btn .now { flex: none; align-self: center; margin-left: auto; padding: 0 6px; border-radius: 999px; background: var(--warn-bg); color: var(--warn-ink); font: 600 0.66rem/1.5 var(--sans); }
+.toc-ch-btn .now + .st { margin-left: 0; }
+.toc-ch.on > .toc-ch-btn .n { color: var(--accent); }
+.toc-ch.on > .toc-ch-btn.cur { box-shadow: inset 3px 0 0 var(--accent); }
 .toc-ch-btn:hover, .toc-ch-btn:focus-visible { background: var(--accent-wash); color: var(--ink); outline: none; }
 .toc-ch.on > .toc-ch-btn { color: var(--ink); background: var(--accent-wash); }
 .toc-secs { display: grid; gap: 1px; margin: 4px 0 12px !important; padding-left: 4px !important; }
@@ -479,9 +507,12 @@ tr.hi td { font-weight: 700; background: var(--formula-bg); }
 .ch-head { display: grid; gap: 6px; padding: 10px 2px 18px; border-bottom: 1px solid var(--hair); }
 .ch-eyebrow { font: 600 0.75rem/1.2 var(--sans); letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); }
 .ch-title { font: 600 2.3rem/1.1 var(--serif); letter-spacing: -0.01em; }
+.ch-num { margin-right: 0.4em; color: var(--accent); font-variant-numeric: tabular-nums; }
 .ch-meta { color: var(--muted); font-size: 0.9rem; }
 .sec { padding: 6px; margin: 34px -6px 0; scroll-margin-top: calc(var(--tb-h) + 10px); content-visibility: auto; contain-intrinsic-size: auto 1400px; }
 .sec.bare { margin-top: 18px; }
+.sec.solo { margin-top: 18px; }
+.sec.solo .sec-line { display: none; }
 .sec-head { display: grid; gap: 7px; margin: 0 2px 16px; }
 .sec-line { display: flex; align-items: baseline; gap: 12px; }
 .sec-num { flex: none; font: 600 1.05rem var(--sans); color: var(--accent); font-variant-numeric: tabular-nums; }
@@ -593,10 +624,22 @@ window.MathJax = {
     <button class="tb-btn icon" type="button" id="btn-toc" aria-label="Contents" title="Chapters" aria-expanded="false"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4h11M2.5 8h11M2.5 12h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
     <div class="brand"><span class="brand-name">Learning board</span><span class="brand-sec">Maths, Micro, Makro und Tutorium</span></div>
     <nav class="tb-group spaces" aria-label="Boards">
-      <button class="tb-btn space-btn" type="button" data-space="math" title="Maths board (1)" aria-pressed="false">Maths</button>
-      <button class="tb-btn space-btn" type="button" data-space="micro" title="Micro board (2)" aria-pressed="false">Micro</button>
-      <button class="tb-btn space-btn" type="button" data-space="macro" title="Makro-Board (3)" aria-pressed="false">Makro</button>
-      <button class="tb-btn space-btn" type="button" data-space="tut" title="Tutorium-Board (4)" aria-pressed="false">Tutorium</button>
+      <div class="board-tab" data-space="math">
+        <button class="tb-btn space-btn" type="button" data-space="math" title="Maths board (1)" aria-pressed="false">Maths</button>
+        <button class="tb-btn chap-btn" type="button" data-space="math" aria-haspopup="menu" aria-expanded="false" aria-controls="chap-menu" aria-label="Chapters of the Maths board" title="Chapters"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="board-tab" data-space="micro">
+        <button class="tb-btn space-btn" type="button" data-space="micro" title="Micro board (2)" aria-pressed="false">Micro</button>
+        <button class="tb-btn chap-btn" type="button" data-space="micro" aria-haspopup="menu" aria-expanded="false" aria-controls="chap-menu" aria-label="Chapters of the Micro board" title="Chapters"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="board-tab" data-space="macro">
+        <button class="tb-btn space-btn" type="button" data-space="macro" title="Makro-Board (3)" aria-pressed="false">Makro</button>
+        <button class="tb-btn chap-btn" type="button" data-space="macro" aria-haspopup="menu" aria-expanded="false" aria-controls="chap-menu" aria-label="Kapitel des Makro-Boards" title="Kapitel"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="board-tab" data-space="tut">
+        <button class="tb-btn space-btn" type="button" data-space="tut" title="Tutorium-Board (4)" aria-pressed="false">Tutorium</button>
+        <button class="tb-btn chap-btn" type="button" data-space="tut" aria-haspopup="menu" aria-expanded="false" aria-controls="chap-menu" aria-label="Kapitel des Tutorium-Boards" title="Kapitel"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
     </nav>
     <div class="tb-group">
       <button class="tb-btn" type="button" id="btn-net" title="See how all sections connect (W)" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="4" r="2" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="12.5" cy="3.5" r="2" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="12.5" r="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5.4 4.1l5.1-.4M4.6 5.8l2.4 4.9M11.5 5.3L9 10.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span class="lbl-text">Network</span></button>
@@ -23365,7 +23408,7 @@ window.MathJax = {
               </div>
               <div>
                 <h3>Alles hängt zusammen</h3>
-                <p>Am Fuß einer Karte steht, worauf sie aufbaut („Grundlage“): Ein Klick führt zu der Karte, die es erklärt, auch im Maths- oder Micro-Board. „Gebraucht in“ zeigt, wo der Inhalt wiederkommt. Das Wissensnetz (Network oder Taste W) zeigt alle Abschnitte mit ihren Ketten, der Abschnitt „Leitideen“ am Ende von Teil VI die Ideen, die durch alle Teile laufen.</p>
+                <p>Am Fuß einer Karte steht, worauf sie aufbaut („Grundlage“): Ein Klick führt zu der Karte, die es erklärt, auch im Maths- oder Micro-Board. „Gebraucht in“ zeigt, wo der Inhalt wiederkommt. Das Wissensnetz (Network oder Taste W) zeigt alle Abschnitte mit ihren Ketten, das Kapitel „Leitideen“ ganz am Ende des Makro-Boards die Ideen, die durch alle Teile laufen.</p>
               </div>
             </div>
           </div>
@@ -23376,7 +23419,7 @@ window.MathJax = {
   <aside class="help mathjax_ignore" id="help" aria-labelledby="help-title" hidden>
     <h2 id="help-title">How to use the board</h2>
     <ul>
-      <li><strong>Chapters:</strong> every board is one or a few long chapters (Makro: one per Teil). Scroll through a chapter; the contents on the left show where you are, and a click jumps to a section or another chapter. Switch boards with the buttons at the top or the keys <kbd>1</kbd> to <kbd>4</kbd>. The Makro and Tutorium boards are in German.</li>
+      <li><strong>Chapters:</strong> every board is split into the chapters of its course (Makro 1 to 22, Micro 1 to 14, Maths 0.1 to 0.10), each one page you scroll through. The arrow next to a board's name lists all its chapters; a click jumps there. The contents on the left show the sections of the chapter you are in. Switch boards with the buttons at the top or the keys <kbd>1</kbd> to <kbd>4</kbd>. The Makro and Tutorium boards are in German.</li>
       <li><strong>Connections:</strong> at the foot of a card, "Builds on" (Grundlage) leads to the exact card that explains what this card needs, and "Used in" (Gebraucht in) to where it comes back. After a jump, the button at the bottom left takes you back. The panel on the right (Zusammenhänge) shows the connections of the section you are reading.</li>
       <li><strong>Network:</strong> the Network button (key <kbd>W</kbd>) shows all sections at once: click one to see its whole chain of foundations, or a Leitidee to see where the same idea returns in the course.</li>
       <li><strong>Notes:</strong> "+ Note" in a card's header adds a note below the card. Click a note to edit it. Write math between \( and \), for example \(MU_1/MU_2 = p_1/p_2\). Notes save automatically.</li>
@@ -23384,6 +23427,7 @@ window.MathJax = {
     </ul>
     <div class="btn-row"><button class="btn" type="button" id="help-close">Got it</button></div>
   </aside>
+  <div class="menu chap-menu mathjax_ignore" id="chap-menu" role="menu" hidden></div>
   <div class="toast" id="toast" role="status" hidden><span id="toast-text"></span><button type="button" id="toast-action" hidden></button></div>
   <button class="back-pill" type="button" id="back-pill" hidden></button>
   <div class="scrim" id="scrim" hidden></div>
@@ -32383,7 +32427,7 @@ window.MathJax = {
   function refreshAll() { refreshMath(); redrawAll(); }
 
   /* =====================================================================
-     Reader: the boards as long chapters (version 24; the canvas engine is archived)
+     Reader: the boards chapter by chapter, one long page per chapter of the course (version 25; the canvas engine is archived)
      FRAMES lists every section with its cards (in columns, read top to bottom, left to right);
      SPACES lists the boards and their sections. Both are also read by the tutor's scripts.
      ===================================================================== */
@@ -32551,47 +32595,103 @@ window.MathJax = {
   const BOARD_KEY = 'macro-board-board-v1', HELP_KEY = 'macro-reader-help-seen-v1', POS_KEY = 'macro-reader-pos-v1';
 
   /* ---------- Chapters ----------
-     Each board is read as one or more long chapters you scroll through (Elias, 2026-11-25: one large
-     chapter per large chapter of the course, no small ones). A chapter lists its sections in reading
-     order. A section of a board that no chapter lists joins that board's last chapter. */
-  const CHAPTERS = [
-    { id: 'maths', board: 'math', title: 'Math toolkit 0.1 to 0.6',
-      frames: ['f-m-intro', 'f-m1', 'f-m2', 'f-m3', 'f-m4', 'f-m5', 'f-m6', 'f-m-sheet', 'f-m-quiz'] },
-    { id: 'micro', board: 'micro', title: 'Mikroökonomie I',
-      frames: ['f-micro-intro', 'f-mi1', 'f-mi2', 'f-mi3', 'f-mi4', 'f-mi5', 'f-mi6', 'f-mi7', 'f-mi8', 'f-mi9', 'f-mi10', 'f-mi11', 'f-mi12', 'f-mi13', 'f-mi14', 'f-mi-quiz'] },
-    { id: 'micro-math', board: 'micro', title: 'Math tools 0.7 to 0.10',
-      frames: ['f-m7', 'f-m8', 'f-m9', 'f-m10', 'f-m-micro', 'f-m-microquiz'] },
-    { id: 'teil-1', board: 'macro', title: 'Teil I · Wachstum',
-      frames: ['f-macro-intro', 'f-ma1', 'f-ma2', 'f-ma3', 'f-ma4', 'f-ma5', 'f-ma6', 'f-ma7', 'f-ma8', 'f-ma9', 'f-ma10', 'f-ma11', 'f-ma-formeln', 'f-ma-quiz'] },
-    { id: 'teil-2', board: 'macro', title: 'Teil II · Arbeitsmarkt',
-      frames: ['f-ma12', 'f-ma13', 'f-ma14', 'f-ma15', 'f-ma16', 'f-ma17', 'f-ma18', 'f-ma19', 'f-ma20', 'f-ma21', 'f-ma22', 'f-ma23', 'f-ma-formeln2', 'f-ma-quiz2'] },
-    { id: 'teil-3', board: 'macro', title: 'Teil III · Konjunktur und Finanzmarktkrise',
-      frames: ['f-ma24', 'f-ma25', 'f-ma26', 'f-ma27', 'f-ma28', 'f-ma29', 'f-ma30', 'f-ma31', 'f-ma32', 'f-ma33', 'f-ma34', 'f-ma35', 'f-ma36', 'f-ma-formeln3', 'f-ma-quiz3'] },
-    { id: 'teil-4', board: 'macro', title: 'Teil IV · Geld',
-      frames: ['f-ma37', 'f-ma38', 'f-ma39', 'f-ma40', 'f-ma41', 'f-ma42', 'f-ma43', 'f-ma44', 'f-ma45', 'f-ma-formeln4', 'f-ma-quiz4'] },
-    { id: 'teil-5', board: 'macro', title: 'Teil V · Umwelt',
-      frames: ['f-ma46', 'f-ma47', 'f-ma48', 'f-ma49', 'f-ma50', 'f-ma51'] },
-    { id: 'teil-6', board: 'macro', title: 'Teil VI · Staatsverschuldung',
-      frames: ['f-ma52', 'f-ma53', 'f-ma54', 'f-ma55', 'f-ma56', 'f-ma-formeln5', 'f-ma-quiz5', 'f-ma-leitideen'] },
-    // all Tutorium sections, in board order
-    { id: 'tutorium', board: 'tut', title: 'Tutorium Makroökonomik I', frames: [] }
-  ];
-  const CHAP = {}, CHAPTER_OF = {};
-  CHAPTERS.forEach(c => {
-    CHAP[c.id] = c;
-    c.frames = c.frames.filter(fid => {
-      if (!SPECS[fid] || SPACE_OF_FRAME[fid] !== c.board || CHAPTER_OF[fid]) return false;
-      CHAPTER_OF[fid] = c.id;
-      return true;
+     Each board is read as the chapters of its course, one long page per chapter: Makro 1 to 22, Micro 1 to 14,
+     Maths 0.1 to 0.10 (Elias, 2026-11-25: chapter 1, 2, 3 and so on, never one per 4.2). A numbered section
+     joins the chapter of its leading number by itself (3.5.3 joins 3; 0.7 is a chapter of its own), so a new
+     numbered section needs no entry here. A board's overview opens its first chapter. Sections without a
+     number (formula sheets, self-tests, Leitideen) are listed under `extra`: at the end of their board, or
+     after the chapter named in `after`. The Tutorium is listed by lecture block. `groups` puts a heading
+     (a Teil of the course) above the chapter it names. A section nothing places joins its board's last chapter. */
+  const CHAPTER_SETUP = {
+    math: {
+      extra: [{ id: 'math-review', group: 'Review', title: 'Formula sheet and self-test', frames: ['f-m-sheet', 'f-m-quiz'] }]
+    },
+    micro: {
+      groups: { '1': 'Mikroökonomie I', '0.7': 'Math tools for Micro' },
+      extra: [
+        { id: 'micro-quiz', after: '14', title: 'Self-test: Mikroökonomie I', frames: ['f-mi-quiz'] },
+        { id: 'micro-math-review', title: 'Math sheet and self-test', frames: ['f-m-micro', 'f-m-microquiz'] }
+      ]
+    },
+    macro: {
+      // chapters without a section of their own number take their title from the slides
+      titles: {
+        '3': 'Wachstum: die ökonomische Analyse', '6': 'Arbeitsmarkt: die ökonomische Analyse',
+        '9': 'Reale Konjunkturzyklen', '10': 'Die Immobilien-, Banken- und Wirtschaftskrise von 2007',
+        '13': 'Neutralität von Geld', '14': 'Geldpolitik bei nominalen Rigiditäten',
+        '18': 'Globale Erwärmung und Wirtschaftswachstum', '21': 'Staatsverschuldung: die ökonomische Analyse'
+      },
+      groups: {
+        '2': 'Teil I · Wachstum', '5': 'Teil II · Arbeitsmarkt', '8': 'Teil III · Konjunktur und Finanzmarktkrise',
+        '12': 'Teil IV · Geld', '16': 'Teil V · Umwelt', '20': 'Teil VI · Staatsverschuldung'
+      },
+      extra: [
+        { id: 'macro-formeln', group: 'Wiederholung', title: 'Formelsammlung (VL 1 bis 26)',
+          frames: ['f-ma-formeln', 'f-ma-formeln2', 'f-ma-formeln3', 'f-ma-formeln4', 'f-ma-formeln5'] },
+        { id: 'macro-quiz-1', title: 'Selbsttest VL 1 bis 5', frames: ['f-ma-quiz'] },
+        { id: 'macro-quiz-2', title: 'Selbsttest VL 6 bis 9', frames: ['f-ma-quiz2'] },
+        { id: 'macro-quiz-3', title: 'Selbsttest VL 10 bis 14', frames: ['f-ma-quiz3'] },
+        { id: 'macro-quiz-4', title: 'Selbsttest VL 15 bis 19', frames: ['f-ma-quiz4'] },
+        { id: 'macro-quiz-5', title: 'Selbsttest VL 20 bis 26', frames: ['f-ma-quiz5'] },
+        { id: 'macro-leitideen', title: 'Leitideen: was den Kurs verbindet', frames: ['f-ma-leitideen'] }
+      ]
+    },
+    tut: {
+      chapters: [
+        { id: 'tut-1', title: 'Aufgaben zu VL 1 bis 5', frames: ['f-tu1', 'f-tu2', 'f-tu3', 'f-tu4', 'f-tu5', 'f-tu6', 'f-tu7', 'f-tu8', 'f-tu9', 'f-tu-extra'] },
+        { id: 'tut-2', title: 'Aufgaben zu VL 6 bis 9', frames: ['f-tu10', 'f-tu11', 'f-tu12', 'f-tu13', 'f-tu14', 'f-tu-extra2'] },
+        { id: 'tut-3', title: 'Aufgaben zu VL 10 bis 14', frames: ['f-tu15', 'f-tu16', 'f-tu17', 'f-tu18', 'f-tu19', 'f-tu-extra3'] },
+        { id: 'tut-4', title: 'Aufgaben zu VL 15 bis 19', frames: ['f-tu20', 'f-tu21', 'f-tu22', 'f-tu-extra4'] },
+        { id: 'tut-5', title: 'Aufgaben zu VL 20 bis 26', frames: ['f-tu23', 'f-tu24', 'f-tu25', 'f-tu26', 'f-tu-extra5'] }
+      ]
+    }
+  };
+  // 3.5.3 belongs to chapter 3; the math topics 0.1 to 0.10 are chapters of their own
+  const chapterKey = num => (/^0\./.test(num) ? num.split('.').slice(0, 2).join('.') : num.split('.')[0]);
+  const CHAPTERS = [];
+  SPACES.forEach(sp => {
+    const setup = CHAPTER_SETUP[sp.id] || {}, order = sp.rows.flat().filter(fid => SPECS[fid]);
+    const placed = new Set(), list = [];
+    const take = frames => frames.filter(fid => SPECS[fid] && SPACE_OF_FRAME[fid] === sp.id && !placed.has(fid) && placed.add(fid));
+    (setup.extra || []).forEach(x => x.frames.forEach(fid => placed.add(fid)));  // keep them out of the numbered chapters
+    if (setup.chapters) setup.chapters.forEach(c => list.push({ id: c.id, board: sp.id, num: '', title: c.title, group: c.group || '', frames: take(c.frames) }));
+    else {
+      const byKey = {};
+      order.forEach(fid => {
+        const s = SPECS[fid];
+        if (s.bare || !s.num || placed.has(fid)) return;
+        const key = chapterKey(s.num);
+        if (!byKey[key]) list.push(byKey[key] = { id: sp.id + '-' + key, board: sp.id, num: key, title: '', group: (setup.groups || {})[key] || '', frames: [] });
+        byKey[key].frames.push(fid);
+        placed.add(fid);
+      });
+      list.forEach(c => {
+        const own = c.frames.find(fid => SPECS[fid].num === c.num);
+        c.title = (setup.titles || {})[c.num] || SPECS[own || c.frames[0]].title;
+      });
+    }
+    (setup.extra || []).forEach(x => {
+      x.frames.forEach(fid => placed.delete(fid));
+      const c = { id: x.id, board: sp.id, num: '', title: x.title, group: x.group || '', frames: take(x.frames) };
+      const at = x.after ? list.findIndex(y => y.num === x.after) : -1;
+      if (at >= 0) list.splice(at + 1, 0, c); else list.push(c);
     });
+    const live = list.filter(c => c.frames.length);
+    if (!live.length) return;
+    let part = '';
+    live.forEach(c => { part = c.group || part; c.part = part; });  // the Teil a chapter belongs to, for its heading
+    live[0].frames.unshift(...take(order.filter(fid => SPECS[fid].bare)));  // the overview opens the board
+    live[live.length - 1].frames.push(...take(order));                      // anything nothing placed
+    CHAPTERS.push(...live);
   });
-  SPACES.forEach(sp => sp.rows.flat().forEach(fid => {
-    if (CHAPTER_OF[fid]) return;
-    const last = CHAPTERS.filter(c => c.board === sp.id).pop();
-    if (last) { last.frames.push(fid); CHAPTER_OF[fid] = last.id; }
-  }));
-  const chaptersOf = b => CHAPTERS.filter(c => c.board === b && c.frames.length);
-  const chapterOrder = CHAPTERS.filter(c => c.frames.length);
+  const CHAP = {}, CHAPTER_OF = {};
+  CHAPTERS.forEach(c => { CHAP[c.id] = c; c.frames.forEach(fid => { CHAPTER_OF[fid] = c.id; }); });
+  const chaptersOf = b => CHAPTERS.filter(c => c.board === b);
+  const chapterOrder = CHAPTERS;
+  // a chapter that is a single section shows that section under the chapter's own heading
+  const soloOf = c => { const s = c.frames.filter(fid => !SPECS[fid].bare); return s.length === 1 ? s[0] : null; };
+  const chapterLabel = c => (c.num ? c.num + ' ' : '') + c.title;
+  const boardLabel = b => (SPACES.find(s => s.id === b) || {}).label || '';
 
   const reader = $('reader'), tocEl = $('toc'), ctxEl = $('ctx'), scrim = $('scrim'), backPill = $('back-pill');
   const topbar = document.querySelector('.topbar');
@@ -32841,12 +32941,15 @@ window.MathJax = {
       const ch = mk('section', 'chapter', null, reader);
       ch.dataset.chapter = c.id; ch.lang = lang; ch.hidden = true;
       const head = mk('header', 'ch-head mathjax_ignore', null, ch);
-      mk('div', 'ch-eyebrow', (SPACES.find(s => s.id === c.board) || {}).label, head);
-      mk('h1', 'ch-title', c.title, head);
-      const secs = c.frames.filter(f => !SPECS[f].bare);
-      mk('p', 'ch-meta', t.sections(secs.length) + ' · ' + t.cards(c.frames.reduce((n, f) => n + sectionCards(f).length, 0)), head);
+      mk('div', 'ch-eyebrow', [boardLabel(c.board), c.part].filter(Boolean).join(' · '), head);
+      const h1 = mk('h1', 'ch-title', null, head);
+      if (c.num) mk('span', 'ch-num', c.num, h1);
+      mk('span', null, c.title, h1);
+      const secs = c.frames.filter(f => !SPECS[f].bare), solo = soloOf(c);
+      const cards = t.cards(c.frames.reduce((n, f) => n + sectionCards(f).length, 0));
+      mk('p', 'ch-meta', secs.length > 1 ? t.sections(secs.length) + ' · ' + cards : cards, head);
       c.frames.forEach(fid => {
-        const sec = mk('section', SPECS[fid].bare ? 'sec bare' : 'sec', null, ch);
+        const sec = mk('section', SPECS[fid].bare ? 'sec bare' : fid === solo ? 'sec solo' : 'sec', null, ch);
         sec.dataset.frame = fid;
         if (!SPECS[fid].bare) sec.appendChild(buildSecHead(fid));
         const box = mk('div', 'sec-cards', null, sec);
@@ -32859,7 +32962,7 @@ window.MathJax = {
       top.addEventListener('click', () => window.scrollTo(0, 0));
       const nx = chapterOrder[k + 1];
       if (nx) {
-        const b = mk('button', 'btn', t.next + ': ' + ((SPACES.find(s => s.id === nx.board) || {}).label || '') + ' · ' + nx.title + ' →', foot); b.type = 'button';
+        const b = mk('button', 'btn', t.next + ': ' + (nx.board !== c.board ? boardLabel(nx.board) + ' · ' : '') + chapterLabel(nx) + ' →', foot); b.type = 'button';
         b.addEventListener('click', () => openChapter(nx.id, { user: true }));
       }
       chapterEls[c.id] = ch;
@@ -32909,9 +33012,80 @@ window.MathJax = {
   }
   const spaceBtns = [...document.querySelectorAll('.space-btn')];
   function updateBoardButtons() {
-    spaceBtns.forEach(b => { const on = b.dataset.space === board; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    spaceBtns.forEach(b => {
+      const on = b.dataset.space === board;
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      const tab = b.closest('.board-tab'); if (tab) tab.classList.toggle('on', on);
+    });
   }
-  spaceBtns.forEach(b => b.addEventListener('click', () => openBoard(b.dataset.space, { user: true })));
+  spaceBtns.forEach(b => b.addEventListener('click', () => { closeChapMenu(false); openBoard(b.dataset.space, { user: true }); }));
+
+  /* ---------- Chapter menu: the arrow next to a board's name lists all its chapters ---------- */
+  const chapMenu = $('chap-menu'), chapBtns = [...document.querySelectorAll('.chap-btn')];
+  let menuBoard = null;
+  function renderChapMenu(b) {
+    const t = FT[langOfBoard(b)];
+    chapMenu.replaceChildren();
+    chapMenu.lang = langOfBoard(b);
+    chapMenu.setAttribute('aria-label', boardLabel(b) + ': ' + t.chapters);
+    mk('div', 'menu-head', boardLabel(b) + ' · ' + t.chapters, chapMenu);
+    chaptersOf(b).forEach(c => {
+      if (c.group) mk('div', 'menu-group', c.group, chapMenu);
+      const it = mk('button', 'chap-item' + (c.id === chapter ? ' on' : ''), null, chapMenu);
+      it.type = 'button'; it.tabIndex = -1; it.dataset.c = c.id;
+      it.setAttribute('role', 'menuitem');
+      if (c.id === chapter) it.setAttribute('aria-current', 'true');
+      mk('span', 'n', c.num, it); mk('span', 't', c.title, it);
+      if (tutorPick && CHAPTER_OF[tutorPick.section] === c.id) mk('span', 'now', t.now, it);
+      it.addEventListener('click', () => { closeChapMenu(false); openChapter(c.id, { user: true }); });
+    });
+  }
+  function placeChapMenu(btn) {
+    const r = (btn.closest('.board-tab') || btn).getBoundingClientRect();
+    const w = Math.min(440, window.innerWidth - 24);
+    chapMenu.style.width = w + 'px';
+    chapMenu.style.left = Math.round(Math.max(12, Math.min(r.left, window.innerWidth - w - 12))) + 'px';
+    chapMenu.style.top = Math.round(r.bottom + 6) + 'px';
+    chapMenu.style.maxHeight = Math.round(Math.max(220, window.innerHeight - r.bottom - 18)) + 'px';
+  }
+  function openChapMenu(b, viaKeys) {
+    const btn = chapBtns.find(x => x.dataset.space === b);
+    if (!btn) return;
+    closeDrawers();
+    menuBoard = b;
+    renderChapMenu(b);
+    chapMenu.hidden = false;
+    placeChapMenu(btn);
+    chapBtns.forEach(x => x.setAttribute('aria-expanded', x === btn ? 'true' : 'false'));
+    const on = chapMenu.querySelector('.chap-item.on') || chapMenu.querySelector('.chap-item');
+    if (on) { chapMenu.scrollTop = Math.max(0, on.offsetTop - chapMenu.clientHeight / 3); if (viaKeys) on.focus(); }
+  }
+  function closeChapMenu(refocus) {
+    if (chapMenu.hidden) return;
+    const btn = chapBtns.find(x => x.dataset.space === menuBoard);
+    chapMenu.hidden = true; menuBoard = null;
+    chapBtns.forEach(x => x.setAttribute('aria-expanded', 'false'));
+    if (refocus && btn) btn.focus();
+  }
+  chapBtns.forEach(btn => {
+    btn.addEventListener('click', e => { if (menuBoard === btn.dataset.space) closeChapMenu(false); else openChapMenu(btn.dataset.space, e.detail === 0); });
+    btn.addEventListener('keydown', e => { if (e.key === 'ArrowDown') { e.preventDefault(); openChapMenu(btn.dataset.space, true); } });
+  });
+  chapMenu.addEventListener('keydown', e => {
+    const items = [...chapMenu.querySelectorAll('.chap-item')], i = items.indexOf(document.activeElement);
+    let j = null;
+    if (e.key === 'ArrowDown') j = i < 0 ? 0 : Math.min(items.length - 1, i + 1);
+    else if (e.key === 'ArrowUp') j = i < 0 ? items.length - 1 : Math.max(0, i - 1);
+    else if (e.key === 'Home') j = 0;
+    else if (e.key === 'End') j = items.length - 1;
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeChapMenu(true); return; }
+    else if (e.key === 'Tab') { closeChapMenu(false); return; }
+    if (j != null && items[j]) { e.preventDefault(); e.stopPropagation(); items[j].focus(); }
+  });
+  document.addEventListener('pointerdown', e => {
+    if (!chapMenu.hidden && !chapMenu.contains(e.target) && !e.target.closest('.chap-btn')) closeChapMenu(false);
+  }, true);
+  window.addEventListener('resize', () => closeChapMenu(false));
   function applyBoardLang() {
     const t = FT[langOfBoard(board)];
     $('btn-ctx').querySelector('.lbl-text').textContent = t.ctx;
@@ -32994,14 +33168,18 @@ window.MathJax = {
   /* ---------- Contents (left) ---------- */
   function renderToc() {
     tocEl.replaceChildren();
-    const sp = SPACES.find(s => s.id === board), t = FT[langOfBoard(board)];
-    mk('div', 'toc-board', sp.label + ' · ' + t.chapters, tocEl);
+    const t = FT[langOfBoard(board)];
+    mk('div', 'toc-board', boardLabel(board) + ' · ' + t.chapters, tocEl);
     const ol = mk('ol', 'toc-chapters', null, tocEl);
     chaptersOf(board).forEach(c => {
+      if (c.group) mk('li', 'toc-group', c.group, ol);
       const li = mk('li', 'toc-ch' + (c.id === chapter ? ' on' : ''), null, ol);
-      const b = mk('button', 'toc-ch-btn', c.title, li); b.type = 'button';
+      const b = mk('button', 'toc-ch-btn', null, li); b.type = 'button'; b.dataset.c = c.id;
+      mk('span', 'n', c.num, b); mk('span', 't', c.title, b);
+      const solo = soloOf(c);
+      if (solo) { b.dataset.f = solo; mk('i', 'st', null, b); }  // a one-section chapter carries that section's marks
       b.addEventListener('click', () => { if (c.id === chapter) { closeDrawers(); window.scrollTo(0, 0); } else openChapter(c.id, { user: true }); });
-      if (c.id !== chapter) return;
+      if (c.id !== chapter || solo) return;
       const sl = mk('ol', 'toc-secs', null, li);
       c.frames.filter(f => !SPECS[f].bare).forEach(fid => {
         const sb = mk('button', 'toc-sec', null, mk('li', null, null, sl)); sb.type = 'button'; sb.dataset.f = fid;
@@ -33013,7 +33191,12 @@ window.MathJax = {
   }
   function refreshTocMarks(scroll) {
     const lang = langOfBoard(board);
-    tocEl.querySelectorAll('.toc-sec').forEach(b => {
+    // a chapter with several sections shows "Up next" while it is folded and holds the tutor's pick
+    tocEl.querySelectorAll('.toc-ch-btn:not([data-f])').forEach(b => {
+      const old = b.querySelector('.now'); if (old) old.remove();
+      if (tutorPick && b.dataset.c !== chapter && CHAPTER_OF[tutorPick.section] === b.dataset.c) mk('span', 'now', FT[lang].now, b);
+    });
+    tocEl.querySelectorAll('[data-f]').forEach(b => {
       const fid = b.dataset.f, p = progress[fid];
       b.classList.toggle('cur', fid === currentF);
       b.classList.toggle('due', isDue(fid));
@@ -33586,6 +33769,7 @@ window.MathJax = {
     const a = document.activeElement;
     const typing = a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || a.isContentEditable);
     if (typing || e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
+    if (!chapMenu.hidden) { if (e.key === 'Escape') { e.preventDefault(); closeChapMenu(true); } return; }
     if (!netEl.hidden) { if (e.key === 'Escape' || e.key === 'w' || e.key === 'W') { e.preventDefault(); closeNet(); } return; }
     switch (e.key) {
       case 'Escape': closeDrawers(); if (!help.hidden) setHelp(false); break;
