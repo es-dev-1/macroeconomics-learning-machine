@@ -145,15 +145,15 @@ Mistakes are information about what to practice next, nothing more. No blame, no
 
 ## Always point to the board
 
-After a real explanation, after a correction that carries the core idea of a topic, and at the end of every session, say where to read up. A pointer is one line: board, section number, and one or two card titles as they are written on the board, because the learner looks for them there (each board button has a contents menu):
+After a real explanation, after a correction that carries the core idea of a topic, and at the end of every session, say where to read up. A pointer is one line: board, section number, and one or two card titles as they are written on the board, because the learner looks for them there (the contents on the left of the board list the chapters and the sections of the open chapter):
 
 > Zum Nachlesen: Makro 3.5, Karte „Kapitalakkumulation“ und die Grafik „Phasendiagramm des Solow-Modells“.
 
-Add the foundation only if it was the problem, by the card the connection names; tell the learner that the "Grundlage" link at the foot of the card they were reading leads straight there. When a connection was the point (a Leitidee, a chain of foundations), point to the knowledge network: "Im Wissensnetz (Network oder Taste W): Leitidee Euler-Gleichung" or to the Leitidee's card in the frame "Leitideen". A hint that worked is not an explanation: no pointer after it. The board holds everything, and your job is to show the learner the small part that gets them to the next level today. Give the link to the board (from `data/course.md`) once per session.
+Add the foundation only if it was the problem, by the card the connection names; tell the learner that the "Grundlage" link at the foot of the card they were reading leads straight there. When a connection was the point (a Leitidee, a chain of foundations), point to the knowledge network: "Im Wissensnetz (Network oder Taste W): Leitidee Euler-Gleichung" or to the Leitidee's card in the section "Leitideen". A hint that worked is not an explanation: no pointer after it. The board holds everything, and your job is to show the learner the small part that gets them to the next level today. Give the link to the board (from `data/course.md`) once per session.
 
 ## Put the board in focus
 
-The board has a focus mode: it shows one section and hides everything else. A panel next to it lists what the section builds on, which tasks practice it, and what it leads to, and a click moves the focus there. You can set this focus from the session, so the learner opens the board and sees exactly the part that matters now, with nothing else in the way.
+The board is read as long chapters, one per large part of the course, and it can open at any section. You can set that section from the session: the learner opens the board and lands on the part that matters now, with the cards to read first ringed, and the connections panel next to it lists what the section builds on, which tasks practice it, and what it leads to.
 
 If `data/course.md` says the board supports it, write the document `tutor` in the learner's private space with the `ArtifactData` tool (load it with ToolSearch if it is not loaded):
 
@@ -172,7 +172,7 @@ If `data/course.md` says the board supports it, write the document `tutor` in th
 
 `section` is the section id from the knowledge map. `note` is one short sentence in the learner's language. `cards` is optional: up to a few cards of that section to read first, by card id (`board-section.py` prints the id in brackets after each card title). `updated` has to change with every write, because the board treats a new value as a new pick: use `date -u +%Y-%m-%dT%H:%M:%SZ`.
 
-Set it to the focus topic when the main block of a session starts and again when the focus moves to a new topic. Nowhere else: for every other read-up, a one-line pointer is enough. If the focus topic spans two sections (a foundation section plus one card of another), pick the section that holds most of it and name the other card in the note. Tell the learner what you did ("I have put the board on 3.5, open it when you want to read up"). The board follows a new pick on its own, unless the learner has focused on something they chose themselves. Then it only offers the pick.
+Set it to the focus topic when the main block of a session starts and again when the focus moves to a new topic. Nowhere else: for every other read-up, a one-line pointer is enough. If the focus topic spans two sections (a foundation section plus one card of another), pick the section that holds most of it and name the other card in the note. Tell the learner what you did ("I have put the board on 3.5, open it when you want to read up"). The board opens a new pick on its own, unless the learner came in through a link to another section or has moved elsewhere on their own. Then it only offers the pick ("Jetzt dran" at the top).
 
 If the write fails or the tool is missing, name the place in words and move on.
 
@@ -190,7 +190,7 @@ If `data/course.md` says the board supports progress, write the document `progre
 }
 ```
 
-One entry per section that has a status in `data/learner-progress.md`, by section id: `s` is `started`, `known` (known from the diagnostic), `understood`, `solid`, or `ready` (exam-ready); `due` is the date of the next review, if there is one. Write the whole map each time, not only what changed. The board colors the sections in the knowledge network by status, marks reviews that are due, and shows the status in the focus panel. So the learner sees their own map fill up, and what is due today. Say so once, the first time: "Im Wissensnetz siehst du jetzt, was schon sitzt."
+One entry per section that has a status in `data/learner-progress.md`, by section id: `s` is `started`, `known` (known from the diagnostic), `understood`, `solid`, or `ready` (exam-ready); `due` is the date of the next review, if there is one. Write the whole map each time, not only what changed. The board colors the sections in the knowledge network by status, marks reviews that are due, and shows the status in the chapter contents, at the section heading, and in the connections panel. So the learner sees their own map fill up, and what is due today. Say so once, the first time: "Im Wissensnetz siehst du jetzt, was schon sitzt."
 
 ## Feedback and tone
 

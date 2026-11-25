@@ -53,7 +53,7 @@ Mark unknown facts as "open" instead of guessing. An invented exam format produc
 
 ## knowledge-links.json
 
-The one place where connections between sections are recorded. The board (card links, focus panel, knowledge network, Leitideen cards), the knowledge map, and `board-path.py` all take them from here.
+The one place where connections between sections are recorded. The board (card links, connections panel, knowledge network, Leitideen cards), the knowledge map, and `board-path.py` all take them from here.
 
 ```json
 {
@@ -84,7 +84,7 @@ The one place where connections between sections are recorded. The board (card l
 
 - `builds_on`: the sections a learner needs first. Direct foundations only, not the foundations of the foundations. Each connection names the other section (`id`) and, ideally, `what` is carried over (a short noun phrase, the concrete tool or idea), `how` this section uses it (one sentence), the cards `here` that use it, and the cards `there` that explain it (content cards, not self-test questions). A bare id still works but shows no label and no card links.
 - `practices`: for a block of tasks, the sections it trains, with the same fields (`here` are the task cards, `there` the theory cards).
-- `concepts`: the guiding ideas (Leitideen) that run through several parts of the course, each with 3 to 8 stops in course order and two connection questions with model answers. They become cards on the board if it has the `CONCEPT-CARDS` markers, chips in the focus panel, and threads in the knowledge network.
+- `concepts`: the guiding ideas (Leitideen) that run through several parts of the course, each with 3 to 8 stops in course order and two connection questions with model answers. They become cards on the board if it has the `CONCEPT-CARDS` markers, chips in the connections panel, and threads in the knowledge network.
 - `parts`: the columns of the knowledge network. A range on one board (`first`, `last`) or a list of `ids`; `join` puts a part under the one before it. Boards without a part get a column each.
 - `source`: where the content comes from (slides, lecture number, sheet).
 - Write `what`, `how`, and `note` in the language of the board the section is on, as plain text without LaTeX.
